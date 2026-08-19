@@ -1,0 +1,13 @@
+@import "~@progress/kendo-theme-default/dist/all.css";
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: "Microsoft JhengHei", "Noto Sans TC", Arial, sans-serif;
+  background: #f4f7fa;
+  color: #2f3d4a;
+}
+
+button, input {
+  font: inherit;
+}

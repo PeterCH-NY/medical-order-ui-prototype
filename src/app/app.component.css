@@ -1,0 +1,166 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.launch-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f7fbff 0%, #e8f1f8 100%);
+}
+
+.launch-button {
+  min-width: 180px;
+  min-height: 52px;
+  font-size: 20px;
+  letter-spacing: 2px;
+}
+
+.window-content {
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding: 4px 2px 0;
+  overflow: hidden;
+}
+
+.type-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  min-height: 36px;
+  padding: 0 4px;
+}
+
+.type-row label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.type-label {
+  font-weight: 700;
+}
+
+.mode-badge {
+  margin-left: auto;
+  border-radius: 999px;
+  background: #e8f1f8;
+  color: #176b91;
+  padding: 4px 12px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.window-content[data-mode="edit"] .mode-badge {
+  background: #fff1d6;
+  color: #945700;
+}
+
+.grids-layout {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+}
+
+.grid-panel {
+  min-width: 0;
+  position: relative;
+  padding-top: 42px;
+}
+
+.grid-panel h2 {
+  box-sizing: border-box;
+  height: 42px;
+  margin: 0;
+  padding: 9px 12px;
+  background: linear-gradient(#3389b7, #19739e);
+  color: #fff;
+  border: 1px solid #15658c;
+  font-size: 18px;
+  line-height: 22px;
+}
+
+.panel-actions {
+  position: absolute;
+  top: 0;
+  height: 38px;
+  display: flex;
+  align-items: flex-start;
+}
+
+.panel-actions-right {
+  right: 0;
+}
+
+.danger-action:not(:disabled) {
+  background: #e66d79;
+  border-color: #e66d79;
+}
+
+.footer-actions {
+  min-height: 48px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+}
+
+.row-checkbox {
+  width: 17px;
+  height: 17px;
+  margin: 0;
+  vertical-align: middle;
+}
+
+.quantity-input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: 3px 4px;
+  border: 1px solid #9caebc;
+  border-radius: 2px;
+  text-align: right;
+}
+
+.quantity-input:disabled {
+  border-color: transparent;
+  background: transparent;
+  color: inherit;
+  opacity: 1;
+}
+
+:host ::ng-deep .k-window {
+  min-width: 900px;
+}
+
+:host ::ng-deep .k-window-titlebar {
+  background: #6c9ed6;
+  color: white;
+}
+
+:host ::ng-deep .k-window-content {
+  padding: 12px 18px 8px;
+}
+
+:host ::ng-deep .k-grid {
+  border-color: #1b85be;
+}
+
+:host ::ng-deep .k-grid th {
+  white-space: nowrap;
+}
+
+:host ::ng-deep .k-grid td {
+  vertical-align: top;
+}
+
+:host ::ng-deep .k-grid tr.k-state-selected > td {
+  background-color: #cbe7f7;
+}

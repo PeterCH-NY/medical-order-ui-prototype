@@ -1,0 +1,6 @@
+allowBuilds:
+  '@angular/cli': true
+  core-js: true
+onlyBuiltDependencies:
+  - '@angular/cli'
+  - core-js

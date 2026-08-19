@@ -1,0 +1,109 @@
+<main class="launch-page">
+  <button kendoButton [primary]="true" class="launch-button" (click)="openWindow()">
+    醫囑醫令
+  </button>
+</main>
+
+<kendo-window
+  *ngIf="windowOpen"
+  title="醫囑醫令"
+  [width]="1500"
+  [height]="600"
+  [top]="100"
+  [left]="100"
+  [draggable]="true"
+  [resizable]="true"
+  (close)="closeWindow()">
+
+  <div class="window-content" [attr.data-mode]="mode">
+    <div class="type-row">
+      <span class="type-label">類型：</span>
+      <label>
+        <input type="radio" name="orderType" value="25012" [(ngModel)]="selectedType">
+        25012 5個
+      </label>
+      <label>
+        <input type="radio" name="orderType" value="25012-Z" [(ngModel)]="selectedType">
+        25012-Z 10個
+      </label>
+      <span class="mode-badge">{{ isEditMode ? '編輯模式' : '檢視模式' }}</span>
+    </div>
+
+    <div class="grids-layout">
+      <section class="grid-panel">
+        <div class="panel-actions panel-actions-right">
+          <button kendoButton [primary]="true" class="danger-action"
+            [disabled]="!isEditMode" (click)="deleteSelectedItems()">
+            刪除勾選項目
+          </button>
+        </div>
+        <h2>申請項目</h2>
+        <kendo-grid
+          [data]="displayedLeftItems"
+          [height]="380"
+          [selectable]="{ mode: 'single' }"
+          kendoGridSelectBy="medicalOrderCode"
+          [(selectedKeys)]="selectedLeftRowKeys">
+          <kendo-grid-column title="選擇" [width]="50">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <input class="row-checkbox" type="checkbox"
+                [disabled]="!isEditMode"
+                [checked]="isLeftChecked(dataItem)"
+                (click)="$event.stopPropagation()"
+                (change)="toggleLeft(dataItem, !isLeftChecked(dataItem))">
+            </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column field="orderCode" title="醫囑代碼" [width]="88"></kendo-grid-column>
+          <kendo-grid-column field="orderName" title="醫囑名稱" [width]="210"></kendo-grid-column>
+          <kendo-grid-column field="medicalOrderCode" title="醫令代碼" [width]="88"></kendo-grid-column>
+          <kendo-grid-column field="medicalOrderName" title="醫令名稱" [width]="197"></kendo-grid-column>
+          <kendo-grid-column field="quantity" title="數量" [width]="65">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <input class="quantity-input" type="number" min="1" step="1"
+                [disabled]="!isEditMode"
+                [ngModel]="dataItem.quantity"
+                (click)="$event.stopPropagation()"
+                (ngModelChange)="updateQuantity(dataItem, $event)">
+            </ng-template>
+          </kendo-grid-column>
+        </kendo-grid>
+      </section>
+
+      <section class="grid-panel">
+        <div class="panel-actions panel-actions-right">
+          <button kendoButton [primary]="true"
+            [disabled]="!isEditMode" (click)="addSelectedItems()">
+            帶入勾選項目
+          </button>
+        </div>
+        <h2>檢驗項目</h2>
+        <kendo-grid
+          [data]="availableItems"
+          [height]="380"
+          [selectable]="{ mode: 'single' }"
+          kendoGridSelectBy="medicalOrderCode"
+          [(selectedKeys)]="selectedRightRowKeys">
+          <kendo-grid-column title="選擇" [width]="50">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <input class="row-checkbox" type="checkbox"
+                [disabled]="!isEditMode"
+                [checked]="isRightChecked(dataItem)"
+                (click)="$event.stopPropagation()"
+                (change)="toggleRight(dataItem, !isRightChecked(dataItem))">
+            </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column field="orderCode" title="醫囑代碼" [width]="88"></kendo-grid-column>
+          <kendo-grid-column field="orderName" title="醫囑名稱" [width]="210"></kendo-grid-column>
+          <kendo-grid-column field="medicalOrderCode" title="醫令代碼" [width]="88"></kendo-grid-column>
+          <kendo-grid-column field="medicalOrderName" title="醫令名稱" [width]="210"></kendo-grid-column>
+          <kendo-grid-column field="quantity" title="數量" [width]="52"></kendo-grid-column>
+        </kendo-grid>
+      </section>
+    </div>
+
+    <div class="footer-actions">
+      <button kendoButton [primary]="true" [disabled]="!isEditMode" (click)="save()">儲存</button>
+      <button kendoButton [primary]="true" [disabled]="isEditMode" (click)="enterEditMode()">編輯</button>
+    </div>
+  </div>
+</kendo-window>
