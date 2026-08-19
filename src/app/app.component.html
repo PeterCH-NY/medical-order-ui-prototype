@@ -43,7 +43,8 @@
           [height]="380"
           [selectable]="{ mode: 'single' }"
           kendoGridSelectBy="medicalOrderCode"
-          [(selectedKeys)]="selectedLeftRowKeys">
+          [(selectedKeys)]="selectedLeftRowKeys"
+          (dblclick)="onLeftGridDoubleClick($event)">
           <kendo-grid-column title="選擇" [width]="50">
             <ng-template kendoGridCellTemplate let-dataItem>
               <input class="row-checkbox" type="checkbox"
@@ -82,7 +83,8 @@
           [height]="380"
           [selectable]="{ mode: 'single' }"
           kendoGridSelectBy="medicalOrderCode"
-          [(selectedKeys)]="selectedRightRowKeys">
+          [(selectedKeys)]="selectedRightRowKeys"
+          (dblclick)="onRightGridDoubleClick($event)">
           <kendo-grid-column title="選擇" [width]="50">
             <ng-template kendoGridCellTemplate let-dataItem>
               <input class="row-checkbox" type="checkbox"

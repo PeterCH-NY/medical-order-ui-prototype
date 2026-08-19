@@ -1,4 +1,5 @@
 import { AppComponent } from './app.component';
+import { MedicalOrder } from './medical-order.model';
 
 describe('AppComponent state machine', () => {
   let component: AppComponent;
@@ -6,6 +7,18 @@ describe('AppComponent state machine', () => {
   beforeEach(() => {
     component = new AppComponent();
   });
+
+  function item(code: string): MedicalOrder {
+    return component.availableItems.find(candidate => candidate.medicalOrderCode === code)!;
+  }
+
+  function doubleClick(rowIndex: number): MouseEvent {
+    const row = { getAttribute: () => String(rowIndex) };
+    const target = {
+      closest: (selector: string) => selector.indexOf('tr[') === 0 ? row : null
+    };
+    return { target } as any;
+  }
 
   it('opens in view mode with the initial saved item', () => {
     component.openWindow();
@@ -81,5 +94,87 @@ describe('AppComponent state machine', () => {
     component.closeWindow();
     component.openWindow();
     expect(component.savedItems[0].quantity).toBe(1);
+  });
+
+  it('ignores right-grid double-clicks in view mode', () => {
+    component.onRightGridDoubleClick(doubleClick(4));
+
+    expect(component.displayedLeftItems.map(row => row.medicalOrderCode)).toEqual(['25004']);
+  });
+
+  it('ignores left-grid double-clicks in view mode', () => {
+    component.onLeftGridDoubleClick(doubleClick(0));
+
+    expect(component.displayedLeftItems.map(row => row.medicalOrderCode)).toEqual(['25004']);
+  });
+
+  it('adds only the double-clicked right-grid row without changing checkbox selection', () => {
+    component.enterEditMode();
+    component.selectedRightIds.add('25001');
+
+    component.onRightGridDoubleClick(doubleClick(4));
+
+    expect(component.workingItems!.map(row => row.medicalOrderCode)).toEqual(['25004', '25024']);
+    expect(Array.from(component.selectedRightIds)).toEqual(['25001']);
+  });
+
+  it('prevents duplicates when a right-grid row is double-clicked', () => {
+    component.enterEditMode();
+
+    component.onRightGridDoubleClick(doubleClick(3));
+
+    expect(component.workingItems!.map(row => row.medicalOrderCode)).toEqual(['25004']);
+  });
+
+  it('removes only the double-clicked left-grid row without using other checked rows', () => {
+    component.enterEditMode();
+    ['25002', '25024'].forEach(code => component.selectedRightIds.add(code));
+    component.addSelectedItems();
+    component.selectedLeftIds.add('25002');
+    component.selectedLeftIds.add('25024');
+
+    component.onLeftGridDoubleClick(doubleClick(0));
+
+    expect(component.workingItems!.map(row => row.medicalOrderCode)).toEqual(['25002', '25024']);
+    expect(Array.from(component.selectedLeftIds)).toEqual(['25002', '25024']);
+  });
+
+  it('ignores double-clicks on interactive controls inside a row', () => {
+    component.enterEditMode();
+    const event = {
+      target: { closest: (selector: string) => selector.indexOf('input') === 0 ? {} : null }
+    } as any;
+
+    component.onRightGridDoubleClick(event);
+    component.onLeftGridDoubleClick(event);
+
+    expect(component.workingItems!.map(row => row.medicalOrderCode)).toEqual(['25004']);
+  });
+
+  it('saves double-click changes to the saved state and result content', () => {
+    spyOn<any>(component, 'downloadResultFile').and.callFake((items: MedicalOrder[]) => {
+      expect(component.buildResultText(items)).toContain('25024');
+      expect(component.buildResultText(items)).not.toContain('25004C');
+    });
+    component.enterEditMode();
+    component.onRightGridDoubleClick(doubleClick(4));
+    component.onLeftGridDoubleClick(doubleClick(0));
+
+    component.save();
+
+    expect(component.savedItems.map(row => row.medicalOrderCode)).toEqual(['25024']);
+    expect(component.mode).toBe('view');
+  });
+
+  it('discards double-click changes when closing without saving', () => {
+    component.openWindow();
+    component.enterEditMode();
+    component.onRightGridDoubleClick(doubleClick(4));
+    component.onLeftGridDoubleClick(doubleClick(0));
+    component.closeWindow();
+
+    component.openWindow();
+
+    expect(component.displayedLeftItems.map(row => row.medicalOrderCode)).toEqual(['25004']);
   });
 });

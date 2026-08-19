@@ -101,12 +101,9 @@ export class AppComponent {
     if (!this.isEditMode || !this.workingItems) {
       return;
     }
-    const existingCodes = new Set(this.workingItems.map(item => item.medicalOrderCode));
-    const additions = this.availableItems
-      .filter(item => this.selectedRightIds.has(item.medicalOrderCode) && !existingCodes.has(item.medicalOrderCode))
-      .map(item => ({ ...item }));
-
-    this.workingItems = [...this.workingItems, ...additions];
+    this.availableItems
+      .filter(item => this.selectedRightIds.has(item.medicalOrderCode))
+      .forEach(item => this.addItemToWorkingCopy(item));
     this.selectedRightIds.clear();
   }
 
@@ -116,6 +113,20 @@ export class AppComponent {
     }
     this.workingItems = this.workingItems.filter(item => !this.selectedLeftIds.has(item.medicalOrderCode));
     this.selectedLeftIds.clear();
+  }
+
+  onRightGridDoubleClick(event: MouseEvent): void {
+    const item = this.getGridRowItem(event, this.availableItems);
+    if (item) {
+      this.addItemToWorkingCopy(item);
+    }
+  }
+
+  onLeftGridDoubleClick(event: MouseEvent): void {
+    const item = this.getGridRowItem(event, this.displayedLeftItems);
+    if (item) {
+      this.removeItemFromWorkingCopy(item);
+    }
   }
 
   save(): void {
@@ -161,6 +172,32 @@ export class AppComponent {
       return;
     }
     checked ? selection.add(id) : selection.delete(id);
+  }
+
+  private addItemToWorkingCopy(item: MedicalOrder): void {
+    if (!this.isEditMode || !this.workingItems ||
+        this.workingItems.some(existing => existing.medicalOrderCode === item.medicalOrderCode)) {
+      return;
+    }
+    this.workingItems = [...this.workingItems, { ...item }];
+  }
+
+  private removeItemFromWorkingCopy(item: MedicalOrder): void {
+    if (!this.isEditMode || !this.workingItems) {
+      return;
+    }
+    this.workingItems = this.workingItems.filter(existing => existing.medicalOrderCode !== item.medicalOrderCode);
+    this.selectedLeftIds.delete(item.medicalOrderCode);
+  }
+
+  private getGridRowItem(event: MouseEvent, items: MedicalOrder[]): MedicalOrder | null {
+    const target = event.target as HTMLElement;
+    if (!target || target.closest('input, button, a')) {
+      return null;
+    }
+    const row = target.closest('tr[data-kendo-grid-item-index]');
+    const rowIndex = row ? Number(row.getAttribute('data-kendo-grid-item-index')) : NaN;
+    return Number.isInteger(rowIndex) && items[rowIndex] ? items[rowIndex] : null;
   }
 
   private clearSelections(): void {
